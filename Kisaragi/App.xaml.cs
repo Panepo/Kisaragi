@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
+using LeptonUVC;
+
 namespace Kisaragi
 {
     /// <summary>
@@ -13,5 +15,6 @@ namespace Kisaragi
     /// </summary>
     public partial class App : Application
     {
+
     }
 }
