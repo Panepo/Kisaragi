@@ -107,6 +107,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="funcEmguCV.cs" />
     <Compile Include="configCameraControl.cs" />
     <Compile Include="configCameraDevice.cs" />
     <Compile Include="funcFormat.cs" />

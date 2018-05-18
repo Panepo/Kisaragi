@@ -2,7 +2,7 @@
 using Emgu.CV;
 using System.Windows.Threading;
 
-namespace Kisaragi
+namespace configCamera
 {
     class cameraControl
     {
@@ -24,12 +24,12 @@ namespace Kisaragi
         {
             cameraDevice = webcamDevice;
             capture = new Capture(webcamDevice);
-            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameWidth, 1920);
-            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameHeight, 1080);
+            //capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameWidth, 1920);
+            //capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameHeight, 1080);
 
-            paraBrightness = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Brightness);
-            paraSharpness = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Sharpness);
-            paraContrast = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Contrast);
+            //paraBrightness = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Brightness);
+            //paraSharpness = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Sharpness);
+            //paraContrast = capture.GetCaptureProperty(Emgu.CV.CvEnum.CapProp.Contrast);
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(myEventHandler);

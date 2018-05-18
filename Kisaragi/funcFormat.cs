@@ -6,9 +6,9 @@ using System.Windows.Media.Imaging;
 using Emgu.CV;
 using System.Runtime.InteropServices;
 
-namespace Kisaragi
+namespace funcFormat
 {
-    class funcFormat
+    class formatTrans
     {
         static public Bitmap BitmapImage2Bitmap(BitmapImage bitmapImage)
         {
