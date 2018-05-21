@@ -13,15 +13,14 @@
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}" ResizeMode="CanMinimize">
+        FontFamily="{DynamicResource MaterialDesignFont}" ResizeMode="CanMinimize" Closing="Window_Closing">
     <Grid>
         <materialDesign:Card Grid.Row="0" Padding="16" Margin="170,10,10,10" HorizontalAlignment="Right" Width="1135" VerticalAlignment="Stretch">
             <Image x:Name="imageBoxDisp" Height="653" Margin="10,10,10,10" VerticalAlignment="Top" MouseLeftButtonDown="imageBoxDisp_MouseLeftButtonDown" MouseLeftButtonUp="imageBoxDisp_MouseLeftButtonUp" MouseMove="imageBoxDisp_MouseMove"/>
         </materialDesign:Card>
 
-        <Button x:Name="buttonCamera" Content="Video Streaming" HorizontalAlignment="Left" Height="60" Margin="32,32,0,0" VerticalAlignment="Top" Width="250" Click="buttonCamera_Click"/>
-        <Button x:Name="buttonPalette" Content="Switch Palette" HorizontalAlignment="Left" Height="60" Margin="32,163,0,0" Width="250" VerticalAlignment="Top" IsEnabled="False"/>
-        <Button x:Name="buttonSave" Content="Save Image" HorizontalAlignment="Left" Margin="32,244,0,0" VerticalAlignment="Top" Width="250" Height="60" IsEnabled="False" Click="buttonSave_Click"/>
+        <Button x:Name="buttonCamera" Content="Thermal Streaming" HorizontalAlignment="Left" Height="60" Margin="32,32,0,0" VerticalAlignment="Top" Width="250" Click="buttonCamera_Click"/>
+        <Button x:Name="buttonSave" Content="Save Image" HorizontalAlignment="Left" Margin="32,163,0,0" VerticalAlignment="Top" Width="250" Height="60" IsEnabled="False" Click="buttonSave_Click"/>
 
         <TextBox x:Name="textSystem" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="System Message" HorizontalAlignment="Left" Margin="32,320,0,0" Width="250" VerticalAlignment="Top"/>
         <TextBox x:Name="textRadioAvg" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Radiometer: Average" Margin="32,362,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="250" />

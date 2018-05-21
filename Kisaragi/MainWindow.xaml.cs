@@ -47,12 +47,13 @@ namespace Kisaragi
         private int cameraWidth = 160;
         private int cameraHeight = 120;
 
+        private Lepton.Handle leptonDevice;
         private Lepton lepton;
-        private Lepton.Vid.LutBuffer userLut;
+        private Lepton.Rad.Roi leptonRoi;
+        private Lepton.Rad.SpotmeterObjKelvin leptonSpotInfo;
 
         // mouse event parameters
         private bool isClicked = false;
-        private bool isRect = false;
         private System.Drawing.Point rectStart = new System.Drawing.Point();
         private System.Drawing.Point rectEnd = new System.Drawing.Point();
 
@@ -93,24 +94,21 @@ namespace Kisaragi
             {
                 watch.Reset();
                 watch.Start();
-
-                CvInvoke.CvtColor(currentFrame, currentFrame, Emgu.CV.CvEnum.ColorConversion.Rgb2Bgr);
-                
-                if (isRect)
-                {
-                    currentFrame = drawing.drawRect(currentFrame, rectStart, rectEnd);
-                }
-
+               
+                currentFrame = drawing.drawRect(currentFrame, rectStart, rectEnd);
                 imageBoxDisp.Source = formatTrans.ToBitmapSource(currentFrame);
 
+                if (!isClicked)
+                {
+                    leptonSpotInfo = lepton.rad.GetSpotmeterObjInKelvinX100Checked();
+                    textRadioMin.Text = cameraLepton.convertTemp(leptonSpotInfo.radSpotmeterMinValue);
+                    textRadioMax.Text = cameraLepton.convertTemp(leptonSpotInfo.radSpotmeterMaxValue);
+                    textRadioAvg.Text = cameraLepton.convertTemp(leptonSpotInfo.radSpotmeterValue);
+                }
+                
                 watch.Stop();
                 textTime.Text = watch.Elapsed.TotalMilliseconds.ToString() + "ms";
             }
-        }
-
-        private void AssignColorMap(Lepton.Vid.LutBuffer userLut, string name)
-        {
-            userLut.bin = Palettes.Names[name];
         }
 
         private void buttonCamera_Click(object sender, RoutedEventArgs e)
@@ -119,31 +117,36 @@ namespace Kisaragi
             {
                 webcam = new cameraControl(webcamDevice, ProcessFrame);
 
+                // lepton initial
                 List<Lepton.Handle> devices = Lepton.GetDevices();
-                Lepton.Handle device = devices[0];
-                this.lepton = device.Open();
-                this.lepton.vid.GetPcolorLut();
+                leptonDevice = devices[0];
+                lepton = leptonDevice.Open();
+
+                // get color palette
+                lepton.vid.GetPcolorLut();
                 foreach (object value in Enum.GetValues(typeof(Lepton.Vid.PcolorLut)))
                 {
-                    string[] parts = Enum.GetName(typeof(Lepton.Vid.PcolorLut), value).Split(new char[]
-                    {
-                    '_'
-                    });
+                    string[] parts = Enum.GetName(typeof(Lepton.Vid.PcolorLut), value).Split(new char[] {'_'});
                     string result = "";
-                    string sep = "";
-                    for (int x = 0; x < parts.Length - 1; x++)
+                    for (int i = 0; i < parts.Length - 1; i+= 1)
                     {
-                        result = result + sep + parts[x][0].ToString() + parts[x].Substring(1).ToLower();
-                        sep = " ";
+                        result += " " + parts[i][0].ToString() + parts[i].Substring(1).ToLower();
                     }
-                    this.comboBoxPalette.Items.Add(result);
-                    this.comboBoxPalette.IsEnabled = true;
+                    comboBoxPalette.Items.Add(result);
                 }
+                comboBoxPalette.IsEnabled = true;
 
-                this.userLut = this.lepton.vid.GetUserLut();
-                this.AssignColorMap(this.userLut, "Iron");
-                this.lepton.vid.SetUserLut(this.userLut);
-                this.lepton.vid.SetPcolorLut(Lepton.Vid.PcolorLut.USER_LUT);
+                // set default color palette to fusion
+                comboBoxPalette.SelectedIndex = 1;
+                lepton.vid.SetPcolorLut((Lepton.Vid.PcolorLut)1);
+
+                // radiometer initial
+                leptonRoi = lepton.rad.GetSpotmeterRoi();
+ 
+                rectStart.X = leptonRoi.startCol;
+                rectStart.Y = leptonRoi.startRow;
+                rectEnd.X = leptonRoi.endCol;
+                rectEnd.Y = leptonRoi.endRow;
             }
 
             if (captureInProgress)
@@ -178,7 +181,7 @@ namespace Kisaragi
                 }
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.FileName = "Cleffa_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
+                saveFileDialog.FileName = "Anemone_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
                 saveFileDialog.Filter = "PNG Image File (*.PNG)|*.PNG|All files (*.*)|*.*";
                 saveFileDialog.FilterIndex = 1;
                 if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -196,15 +199,13 @@ namespace Kisaragi
 
         private void comboBoxPalette_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            int idx = comboBoxPalette.SelectedIndex;
+            lepton.vid.SetPcolorLut((Lepton.Vid.PcolorLut)idx);
         }
-
-
 
         private void imageBoxDisp_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             isClicked = true;
-            isRect = true;
             System.Windows.Point pointMouse = this.TranslatePoint(e.GetPosition(this), imageBoxDisp);
             double pointMouseDX = Math.Floor(pointMouse.X * cameraWidth / imageBoxDisp.ActualWidth);
             double pointMouseDY = Math.Floor(pointMouse.Y * cameraHeight / imageBoxDisp.ActualHeight);
@@ -212,13 +213,18 @@ namespace Kisaragi
 
             rectStart = pointMouseD;
             rectEnd = pointMouseD;
-            textRadioMin.Text = pointMouseD.X.ToString();
-            textRadioMax.Text = pointMouseD.Y.ToString();
         }
 
         private void imageBoxDisp_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             isClicked = false;
+
+            leptonRoi.startCol = (ushort)rectStart.X;
+            leptonRoi.startRow = (ushort)rectStart.Y;
+            leptonRoi.endCol = (ushort)rectEnd.X;
+            leptonRoi.endRow = (ushort)rectEnd.Y;
+
+            lepton.rad.SetSpotmeterRoi(leptonRoi);
         }
 
         private void imageBoxDisp_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -230,10 +236,12 @@ namespace Kisaragi
                 double pointMouseDY = Math.Floor(pointMouse.Y * cameraHeight / imageBoxDisp.ActualHeight);
                 rectEnd.X = Convert.ToInt32(pointMouseDX);
                 rectEnd.Y = Convert.ToInt32(pointMouseDY);
-
-                textRadioMin.Text = pointMouse.X.ToString();
-                textRadioMax.Text = pointMouse.Y.ToString();
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }

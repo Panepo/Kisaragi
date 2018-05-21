@@ -68,8 +68,8 @@ namespace configCamera
                 capture.Dispose();
 
             capture = new Capture(webcamDevice);
-            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameWidth, 1920);
-            capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameHeight, 1080);
+            //capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameWidth, 1920);
+            //capture.SetCaptureProperty(Emgu.CV.CvEnum.CapProp.FrameHeight, 1080);
 
             timer = new DispatcherTimer();
             timer.Tick += new EventHandler(myEventHandler);
