@@ -42,7 +42,7 @@ namespace Kisaragi
         private Mat currentFrame = new Mat();
         private cameraDevice[] webcams;
         private int webcamDevice = 0;
-        private Stopwatch watch;
+        //private Stopwatch watch;
         private bool cameraFound = false;
         private int cameraWidth = 160;
         private int cameraHeight = 120;
@@ -68,7 +68,7 @@ namespace Kisaragi
             {
                 webcams[i] = new cameraDevice(i, systemCameras[i].Name, systemCameras[i].ClassID);
 
-                if (webcams[i].ToStringS() == "PureThermal 1")
+                if (webcams[i].ToStringName() == "PureThermal 1")
                 {
                     buttonCamera.IsEnabled = true;
                     webcamDevice = i;
@@ -77,13 +77,13 @@ namespace Kisaragi
                 }
             }
 
-            if (cameraFound)
+            if (cameraFound == false)
             {
                 buttonCamera.IsEnabled = false;
-                textSystem.Text = "Thermal camera not found.";
+                buttonCamera.Content = "Thermal camera not found.";
             }
 
-            watch = new Stopwatch();
+            //watch = new Stopwatch();
         }
 
         private void ProcessFrame(object sender, EventArgs arg)
@@ -92,10 +92,10 @@ namespace Kisaragi
 
             if (currentFrame != null)
             {
-                watch.Reset();
-                watch.Start();
-               
-                currentFrame = drawing.drawRect(currentFrame, rectStart, rectEnd);
+                //watch.Reset();
+                //watch.Start();
+                currentFrame = imageProcess.imgRotation(currentFrame, SystemInformation.ScreenOrientation.ToString());
+                currentFrame = imageProcess.drawRect(currentFrame, rectStart, rectEnd);
                 imageBoxDisp.Source = formatTrans.ToBitmapSource(currentFrame);
 
                 if (!isClicked)
@@ -106,8 +106,8 @@ namespace Kisaragi
                     textRadioAvg.Text = cameraLepton.convertTemp(leptonSpotInfo.radSpotmeterValue);
                 }
                 
-                watch.Stop();
-                textTime.Text = watch.Elapsed.TotalMilliseconds.ToString() + "ms";
+                //watch.Stop();
+                //textTime.Text = watch.Elapsed.TotalMilliseconds.ToString() + "ms";
             }
         }
 
@@ -167,7 +167,7 @@ namespace Kisaragi
         {
             if (currentFrame == null)
             {
-                textSystem.Text = "There is no image to save.";
+                //textSystem.Text = "There is no image to save.";
             }
             else
             {
@@ -175,8 +175,6 @@ namespace Kisaragi
                 {
                     buttonCamera.Content = "Camera Restart";
                     webcam.stopTimer();
-                    webcam.releaseCamera();
-                    webcam = null;
                     captureInProgress = !captureInProgress;
                 }
 
@@ -192,7 +190,7 @@ namespace Kisaragi
                     encoder.Frames.Add(BitmapFrame.Create(formatTrans.ToBitmapSource(currentFrame)));
                     encoder.Save(stream);
                     stream.Close();
-                    textSystem.Text = "The image was saved to your computer.";
+                    //textSystem.Text = "The image was saved to your computer.";
                 }
             }
         }
@@ -219,10 +217,27 @@ namespace Kisaragi
         {
             isClicked = false;
 
-            leptonRoi.startCol = (ushort)rectStart.X;
-            leptonRoi.startRow = (ushort)rectStart.Y;
-            leptonRoi.endCol = (ushort)rectEnd.X;
-            leptonRoi.endRow = (ushort)rectEnd.Y;
+            if (rectStart.X < rectEnd.X)
+            {
+                leptonRoi.startCol = (ushort)rectStart.X;
+                leptonRoi.endCol = (ushort)rectEnd.X;
+            }
+            else
+            {
+                leptonRoi.startCol = (ushort)rectEnd.X;
+                leptonRoi.endCol = (ushort)rectStart.X;
+            }
+
+            if (rectStart.Y < rectEnd.Y)
+            {
+                leptonRoi.startRow = (ushort)rectStart.Y;
+                leptonRoi.endRow = (ushort)rectEnd.Y;
+            }
+            else
+            {
+                leptonRoi.startRow = (ushort)rectEnd.Y;
+                leptonRoi.endRow = (ushort)rectStart.Y;
+            }
 
             lepton.rad.SetSpotmeterRoi(leptonRoi);
         }
@@ -237,11 +252,6 @@ namespace Kisaragi
                 rectEnd.X = Convert.ToInt32(pointMouseDX);
                 rectEnd.Y = Convert.ToInt32(pointMouseDY);
             }
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
         }
     }
 }

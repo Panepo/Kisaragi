@@ -15,6 +15,11 @@ namespace configCamera
             identifier = Identity;
         }
 
+        public string ToStringName()
+        {
+            return String.Format("{0}", deviceName);
+        }
+
         public string ToStringL()
         {
             return String.Format("[{0}] {1}: {2}", deviceID, deviceName, identifier);

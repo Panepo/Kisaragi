@@ -11,7 +11,7 @@ using Emgu.Util;
 
 namespace funcEmguCV
 {
-    class drawing
+    class imageProcess
     {
         static public Mat drawRect(Mat inputMat, Point pointStart, Point pointEnd)
         {
@@ -29,6 +29,30 @@ namespace funcEmguCV
             CvInvoke.Rectangle(outputMat, rect, new Bgr(Color.LightGreen).MCvScalar, 1);
 
             return outputMat;
+        }
+
+        static public Mat imgRotation(Mat inputMat, string angle)
+        {
+            Image<Bgr, Byte> temp = inputMat.ToImage<Bgr, Byte>();
+
+            switch (angle)
+            {
+                case "Angle0":
+                    break;
+                case "Angle90":
+                    temp = temp.Rotate(90, new Bgr(Color.Black));
+                    break;
+                case "Angle180":
+                    temp = temp.Rotate(180, new Bgr(Color.Black));
+                    break;
+                case "Angle270":
+                    temp = temp.Rotate(270, new Bgr(Color.Black));
+                    break;
+                default:
+                    break;
+            }
+
+            return temp.Mat;
         }
     }
 }
