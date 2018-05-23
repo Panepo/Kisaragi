@@ -80,7 +80,7 @@ namespace Kisaragi
             if (cameraFound == false)
             {
                 buttonCamera.IsEnabled = false;
-                buttonCamera.Content = "Thermal camera not found.";
+                buttonCamera.Content = "Thermal camera not found";
             }
 
             //watch = new Stopwatch();
