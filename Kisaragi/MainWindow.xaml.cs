@@ -60,6 +60,8 @@ namespace Kisaragi
         public MainWindow()
         {
             InitializeComponent();
+            this.Left = (SystemParameters.PrimaryScreenWidth - this.Width) / 2;
+            this.Top = 20;
 
             DsDevice[] systemCameras = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
             webcams = new cameraDevice[systemCameras.Length];
@@ -95,8 +97,9 @@ namespace Kisaragi
                 //watch.Reset();
                 //watch.Start();
                 currentFrame = imageProcess.imgRotation(currentFrame, SystemInformation.ScreenOrientation.ToString());
-                currentFrame = imageProcess.drawRect(currentFrame, rectStart, rectEnd);
-                imageBoxDisp.Source = formatTrans.ToBitmapSource(currentFrame);
+
+                Mat frameDisp = imageProcess.drawRect(currentFrame, rectStart, rectEnd);
+                imageBoxDisp.Source = formatTrans.ToBitmapSource(frameDisp);
 
                 if (!isClicked)
                 {
@@ -132,7 +135,9 @@ namespace Kisaragi
                     {
                         result += " " + parts[i][0].ToString() + parts[i].Substring(1).ToLower();
                     }
-                    comboBoxPalette.Items.Add(result);
+
+                    if (result != " User")
+                        comboBoxPalette.Items.Add(result);
                 }
                 comboBoxPalette.IsEnabled = true;
 
@@ -187,7 +192,7 @@ namespace Kisaragi
                     FileStream stream = new FileStream(saveFileDialog.FileName, FileMode.Create);
                     PngBitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Interlace = PngInterlaceOption.Off;
-                    encoder.Frames.Add(BitmapFrame.Create(formatTrans.ToBitmapSource(currentFrame)));
+                    encoder.Frames.Add(BitmapFrame.Create(formatTrans.ToBitmapSource(imageProcess.imgResize(currentFrame,640,480))));
                     encoder.Save(stream);
                     stream.Close();
                     //textSystem.Text = "The image was saved to your computer.";

@@ -24,9 +24,9 @@ namespace funcEmguCV
             Size rectSize = new Size( Math.Abs(pointStart.X - pointEnd.X), Math.Abs(pointStart.Y - pointEnd.Y));
             Rectangle rect = new Rectangle(rectPoint, rectSize);
 
-            CvInvoke.Rectangle(overlay, rect, new Bgr(Color.LightGreen).MCvScalar, 2);
+            CvInvoke.Rectangle(overlay, rect, new Bgr(Color.Cyan).MCvScalar, 2);
             CvInvoke.AddWeighted(inputMat, 0.7, overlay, 0.3, 0, outputMat);
-            CvInvoke.Rectangle(outputMat, rect, new Bgr(Color.LightGreen).MCvScalar, 1);
+            CvInvoke.Rectangle(outputMat, rect, new Bgr(Color.Cyan).MCvScalar, 1);
 
             return outputMat;
         }
@@ -53,6 +53,12 @@ namespace funcEmguCV
             }
 
             return temp.Mat;
+        }
+
+        static public Mat imgResize(Mat inputMat, int width, int height)
+        {
+            Image<Bgr, Byte> temp = inputMat.ToImage<Bgr, Byte>();
+            return temp.Resize(width, height, Emgu.CV.CvEnum.Inter.Linear).Mat;
         }
     }
 }

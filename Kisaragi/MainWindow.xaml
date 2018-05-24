@@ -12,7 +12,7 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
-        ResizeMode="CanMinimize" SizeToContent="Width">
+        ResizeMode="CanMinimize" SizeToContent="Width" WindowStartupLocation="Manual">
     <Grid>
         <materialDesign:Card Grid.Row="0" Padding="10" Margin="10,10,10,10" HorizontalAlignment="Right" Width="680" Height="500" VerticalAlignment="Top">
             <Image x:Name="imageBoxDisp" Height="480" Margin="10,10,10,10" VerticalAlignment="Top" MouseLeftButtonDown="imageBoxDisp_MouseLeftButtonDown" MouseLeftButtonUp="imageBoxDisp_MouseLeftButtonUp" MouseMove="imageBoxDisp_MouseMove"/>
